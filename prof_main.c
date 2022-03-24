@@ -5,6 +5,8 @@
 #define FILE_NAME "testdata.txt"
 #define STsize 1000     //size of string table
 #define HTsize 100   //size of hash table
+#define FALSE 0
+#define TRUE 1
 
 // more define variable
 // main 함수에서 정의되지 않은 변수들을 전역변수 혹은 함수 내의 지역변수로 선언
@@ -161,7 +163,7 @@ void ComputeHS(int nid, int nfree)
 {
     int total = 0;
     for(int i = nid; i < nfree; i++){
-        total += ST[i];
+        total += (int)ST[i];
     }
     hashcode = total % HTsize +1;
 
@@ -175,6 +177,26 @@ void ComputeHS(int nid, int nfree)
 //         If find a match, save the starting index of ST in same id. ?
 void LookupHS(int nid, int hscode)
 {
+    if (HT[hscode] != NULL) {
+        HTpointer ht = HT[hscode];
+        while (ht != NULL){
+            int i = nid;
+            while(ST[i] != NULL){
+                if (ST[ht->index] != ST[i]){
+                    found = FALSE;
+                    break;
+                }
+                found = TRUE;
+                i++;
+                ht->index++;
+            }
+            ht = ht->next;
+        }
+    }
+    
+    else { 
+        found = FALSE;
+    }
     //hashcode에 해당하는 HT의 리스트를 탐색하여 해당 identifier가 이미 HT에 있는지 없는지 여부를 판단
     //판단 결과는 found 변수에 저장
 }
@@ -184,26 +206,35 @@ void LookupHS(int nid, int hscode)
 //         starting index of the identifier in ST.
 //         IF list head is not a null , it adds a new identifier to the head of the chain ?
 void ADDHT(int nid, int hscode)
-{
-    if(HT[hscode] == NULL){
-        struct HTentry ht;
-        ht.index = nid;
-        ht.next = NULL;
+{   
+    LookupHS(nid,hscode);
+    if(found == FALSE){
+        HTpointer ptr;
+
+        ptr = (HTpointer)malloc(sizeof(ptr));
+        ptr->index = nid;
+        ptr->next = NULL;
+        
+        free(ptr);
     }
     else {
-        // HT[hscode]
         /* 1. allocate node */
-        struct HTentry* ht = (struct HTentry*) malloc(sizeof(struct HTentry));
+        HTpointer ptr;
+        ptr = (HTpointer)malloc(sizeof(ptr));
         /* 2. put in the data  */
-        ht->index = nid;
-        ht->next = (*)
+        ptr->index = nid;
+        /* 3. Make next of new node as head */
+        ptr->next = (HT[hscode]);
+        /* 4. move the head to point to the new node */
+        HT[hscode] = ptr;
+
+        free(ptr);
     }
 
     //HT에 추가되지 않은 identifier인 경우
     //index는 ST의 index, next는 null 인 새로운 HTEntry를 생성
     //기존 HT에 추가
 }
-
 
 /*  MAIN   -   Read the identifier from the file directly into ST.
 Compute its hashcode.
