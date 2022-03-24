@@ -6,8 +6,8 @@
 #define STsize 1000     //size of string table
 #define HTsize 100   //size of hash table
 
-// more define variables¡¦
-// main ÇÔ¼ö¿¡¼­ Á¤ÀÇµÇÁö ¾ÊÀº º¯¼öµéÀ» Àü¿ªº¯¼ö È¤Àº ÇÔ¼ö ³»ÀÇ Áö¿ªº¯¼ö·Î ¼±¾ğ
+// more define variable
+// main í•¨ìˆ˜ì—ì„œ ì •ì˜ë˜ì§€ ì•Šì€ ë³€ìˆ˜ë“¤ì„ ì „ì—­ë³€ìˆ˜ í˜¹ì€ í•¨ìˆ˜ ë‚´ì˜ ì§€ì—­ë³€ìˆ˜ë¡œ ì„ ì–¸
 int nextid, nextfree;
 int hashcode;
 int found;
@@ -26,7 +26,7 @@ char seperators[] = " .,;:?!\t\n";
 HTpointer HT[HTsize];
 char ST[STsize];
 
-// more global variables¡¦
+// more global variablesâ€¦
 ERRORtypes err;
 
 FILE* fp;   //to be a pointer to FILE 
@@ -43,9 +43,9 @@ void initialize()
 //         if illegal seperators,print out error message.
 void SkipSeperators()
 {
-    //input °ªÀÌ seperators[]ÀÇ ¿ø¼Ò Áß ÇÏ³ª¿Í ÀÏÄ¡ÇÏ´Â °æ¿ì¿¡´Â
-    //input °ªÀ» ÆÄÀÏ·ÎºÎÅÍ »õ·Ó°Ô ÀĞ¾î¿À´Â ¹İº¹ ¼öÇà 
-    //input °ªÀÌ seperators[]ÀÇ ¿ø¼Ò¿Í ÀÏÄ¡ÇÏÁö ¾ÊÀ» ¶§±îÁö
+    //input ê°’ì´ seperators[]ì˜ ì›ì†Œ ì¤‘ í•˜ë‚˜ì™€ ì¼ì¹˜í•˜ëŠ” ê²½ìš°ì—ëŠ”
+    //input ê°’ì„ íŒŒì¼ë¡œë¶€í„° ìƒˆë¡­ê²Œ ì½ì–´ì˜¤ëŠ” ë°˜ë³µ ìˆ˜í–‰ 
+    //input ê°’ì´ seperators[]ì˜ ì›ì†Œì™€ ì¼ì¹˜í•˜ì§€ ì•Šì„ ë•Œê¹Œì§€
 }
 
 // PrintHStable     -      Prints the hash table.write out the hashcode and the list of identifiers 
@@ -53,16 +53,16 @@ void SkipSeperators()
 //         Print out the number of characters used up in ST. ?
 void PrintHStable()
 {
-    //HTÀÇ °ªÀ» Ãâ·ÂÇÏ´Â ÇÔ¼ö
-    //´Ü, HTÀÇ °ªÀÌ non-empty listÀÎ °æ¿ì
-    //HTÀÇ °¢ ¿ø¼ÒµéÀº index/pointer °ªÀ» °¡Áö´Â ±¸Á¶Ã¼
-    //HT¿¡¼­ nextÀÇ °ªÀÌ null ÀÎ °æ¿ì
+    //HTì˜ ê°’ì„ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
+    //ë‹¨, HTì˜ ê°’ì´ non-empty listì¸ ê²½ìš°
+    //HTì˜ ê° ì›ì†Œë“¤ì€ index/pointer ê°’ì„ ê°€ì§€ëŠ” êµ¬ì¡°ì²´
+    //HTì—ì„œ nextì˜ ê°’ì´ null ì¸ ê²½ìš°
     /*
-    * ÃÊ±â »óÅÂ
+    * ì´ˆê¸° ìƒíƒœ
     * |  HT[0]  |  HT[1]  |  HT[2]  |  HT[3]  |...
     *  (0, null) (1, null) (2, null) (3, null) ...
     * 
-    * hashcodeÀÇ °ªÀÌ 2ÀÎ entry°¡ Ãß°¡µÇ´Â °æ¿ì
+    * hashcodeì˜ ê°’ì´ 2ì¸ entryê°€ ì¶”ê°€ë˜ëŠ” ê²½ìš°
     *  (0, null) (1, null) (2, addr) (3, null) ...
     *                      (index, null)
     */
@@ -83,19 +83,25 @@ void PrintError(ERRORtypes err)
 //         If first letter is digit, print out error message. ?
 void ReadID()
 {
-    // ÀÔ·Â ÆÄÀÏ·ÎºÎÅÍ identifier¸¦ ÀĞ¾î¿Í¼­ ST¿¡ ÀúÀå
-    // identifier°¡ À¯È¿ÇÑ°¡¸¦ µûÁö±â À§ÇØ inputÀÌ ¿µ¾î ¾ËÆÄºª ´ë¼Ò¹®ÀÚÀÎÁö/¼ıÀÚÀÎÁö/_ÀÎÁö¸¦ ÆÇ´ÜÇÏ¿©¾ß ÇÔ
+    // ì…ë ¥ íŒŒì¼ë¡œë¶€í„° identifierë¥¼ ì½ì–´ì™€ì„œ STì— ì €ì¥
+    // identifierê°€ ìœ íš¨í•œê°€ë¥¼ ë”°ì§€ê¸° ìœ„í•´ inputì´ ì˜ì–´ ì•ŒíŒŒë²³ ëŒ€ì†Œë¬¸ìì¸ì§€/ìˆ«ìì¸ì§€/_ì¸ì§€ë¥¼ íŒë‹¨í•˜ì—¬ì•¼ í•¨
 
-    // ÀÌ ¶§ ST¿¡ ÀúÀåÇÏ´Â ½ÃÀÛÀ§Ä¡ nextid
-    // ST¿¡ ÀúÀåµÇ°í ±× ´ÙÀ½ ºó °ø°£ÀÇ À§Ä¡ nextfree
+    // ì´ ë•Œ STì— ì €ì¥í•˜ëŠ” ì‹œì‘ìœ„ì¹˜ nextid
+    // STì— ì €ì¥ë˜ê³  ê·¸ ë‹¤ìŒ ë¹ˆ ê³µê°„ì˜ ìœ„ì¹˜ nextfree
 }
 
 // ComputeHS    - Compute the hash code of identifier by summing the ordinal values of its
 //           characters and then taking the sum modulo the size of HT. 
 void ComputeHS(int nid, int nfree)
 {
-    //ÀÎµ¦½º nidºÎÅÍ nfree ±îÁö¿¡ ÇØ´çÇÏ´Â STÀÇ °ªÀ» ÀĞ¾î¿Í¼­ ´õÇØÁØ ÈÄ, HTÀÇ Å©±â·Î ³ª´©°í, +1 ÇÑ °ªÀÌ hashcode
-    //hashcode´Â Àü¿ªº¯¼ö·Î ¼±¾ğµÇ¾î ÀÖÀ½ 
+    int total = 0;
+    for(int i = nid; i < nfree; i++){
+        total += ST[i];
+    }
+    hashcode = total % HTsize +1;
+
+    //ì¸ë±ìŠ¤ nidë¶€í„° nfree ê¹Œì§€ì— í•´ë‹¹í•˜ëŠ” STì˜ ê°’ì„ ì½ì–´ì™€ì„œ ë”í•´ì¤€ í›„, HTì˜ í¬ê¸°ë¡œ ë‚˜ëˆ„ê³ , +1 í•œ ê°’ì´ hashcode
+    //hashcodeëŠ” ì „ì—­ë³€ìˆ˜ë¡œ ì„ ì–¸ë˜ì–´ ìˆìŒ 
 }
 
 // LookupHS    -For each identifier,Look it up in the hashtable for previous occurrence
@@ -104,8 +110,8 @@ void ComputeHS(int nid, int nfree)
 //         If find a match, save the starting index of ST in same id. ?
 void LookupHS(int nid, int hscode)
 {
-    //hashcode¿¡ ÇØ´çÇÏ´Â HTÀÇ ¸®½ºÆ®¸¦ Å½»öÇÏ¿© ÇØ´ç identifier°¡ ÀÌ¹Ì HT¿¡ ÀÖ´ÂÁö ¾ø´ÂÁö ¿©ºÎ¸¦ ÆÇ´Ü
-    //ÆÇ´Ü °á°ú´Â found º¯¼ö¿¡ ÀúÀå
+    //hashcodeì— í•´ë‹¹í•˜ëŠ” HTì˜ ë¦¬ìŠ¤íŠ¸ë¥¼ íƒìƒ‰í•˜ì—¬ í•´ë‹¹ identifierê°€ ì´ë¯¸ HTì— ìˆëŠ”ì§€ ì—†ëŠ”ì§€ ì—¬ë¶€ë¥¼ íŒë‹¨
+    //íŒë‹¨ ê²°ê³¼ëŠ” found ë³€ìˆ˜ì— ì €ì¥
 }
 
 // ADDHT   -   Add a new identifier to the hash table.
@@ -114,9 +120,10 @@ void LookupHS(int nid, int hscode)
 //         IF list head is not a null , it adds a new identifier to the head of the chain ?
 void ADDHT(int hscode)
 {
-    //HT¿¡ Ãß°¡µÇÁö ¾ÊÀº identifierÀÎ °æ¿ì
-    //index´Â STÀÇ index, next´Â null ÀÎ »õ·Î¿î HTEntry¸¦ »ı¼º
-    //±âÁ¸ HT¿¡ Ãß°¡
+
+    //HTì— ì¶”ê°€ë˜ì§€ ì•Šì€ identifierì¸ ê²½ìš°
+    //indexëŠ” STì˜ index, nextëŠ” null ì¸ ìƒˆë¡œìš´ HTEntryë¥¼ ìƒì„±
+    //ê¸°ì¡´ HTì— ì¶”ê°€
 }
 
 /*  MAIN   -   Read the identifier from the file directly into ST.
@@ -132,29 +139,29 @@ Print out the hashtable, and number of characters used up in ST
 int main()
 {
     int i;
-    PrintHeading(); // Çì´õ ºÎºĞ ´Ü¼ø Ãâ·Â ÇÔ¼ö
-    initialize(); // ÀÔ·Â ÆÄÀÏ open && ÀÔ·Â ÆÄÀÏ·ÎºÎÅÍ Ã¹¹øÂ° °ªÀ» ÀĞ¾î¿Í¼­ input¿¡ ÀúÀå
+    PrintHeading(); // í—¤ë” ë¶€ë¶„ ë‹¨ìˆœ ì¶œë ¥ í•¨ìˆ˜
+    initialize(); // ì…ë ¥ íŒŒì¼ open && ì…ë ¥ íŒŒì¼ë¡œë¶€í„° ì²«ë²ˆì§¸ ê°’ì„ ì½ì–´ì™€ì„œ inputì— ì €ì¥
 
-    while (input != EOF) { // ÆÄÀÏÀÇ ³¡±îÁö ¹İº¹
-        err = noerror; // err´Â ÇÁ·Î±×·¥ ¼öÇà µµÁß ¹ß»ıÇÏ´Â ¿¡·¯ ±¸ºĞÀ» À§ÇØ »ç¿ëÇÏ´Â º¯¼ö. ÃÊ±â°ªÀº ¿¡·¯ ¾øÀ½À¸·Î ¼³Á¤
-        SkipSeperators(); // input°ªÀ» ÇÏ³ª¾¿ ÀĞ¾î¿À´Âµ¥, delimiterÀÎ °æ¿ì skip
-        ReadID(); // ´ÙÀ½ delimiter°¡ ³ªÅ¸³¯ ¶§±îÁö identifier ÀĞ¾î¿À±â. ÀĞ¾î ¿Â identifier´Â ST¿¡ ÀúÀå
-                  // nextid, nextfree °ªÀÌ ÀÌ ¶§ ¼³Á¤
-        if (input != EOF && err != illid) { // illegal identifier°¡ ¾Æ´Ñ °æ¿ì hashcode °è»ê ÈÄ lookup
-            if (nextfree == STsize) { //nextid¿Í nextfree´Â STÀÇ ÀÎµ¦½º
-                // ST¿¡ ´ëÇÑ overflow ¹ß»ı
+    while (input != EOF) { // EOF = end of file
+        err = noerror; // errëŠ” í”„ë¡œê·¸ë¨ ìˆ˜í–‰ ë„ì¤‘ ë°œìƒí•˜ëŠ” ì—ëŸ¬ êµ¬ë¶„ì„ ìœ„í•´ ì‚¬ìš©í•˜ëŠ” ë³€ìˆ˜. ì´ˆê¸°ê°’ì€ ì—ëŸ¬ ì—†ìŒìœ¼ë¡œ ì„¤ì •
+        SkipSeperators(); // inputê°’ì„ í•˜ë‚˜ì”© ì½ì–´ì˜¤ëŠ”ë°, delimiterì¸ ê²½ìš° skip
+        ReadID(); // ë‹¤ìŒ delimiterê°€ ë‚˜íƒ€ë‚  ë•Œê¹Œì§€ identifier ì½ì–´ì˜¤ê¸°. ì½ì–´ ì˜¨ identifierëŠ” STì— ì €ì¥
+                  // nextid, nextfree ê°’ì´ ì´ ë•Œ ì„¤ì •
+        if (input != EOF && err != illid) { // illegal identifierê°€ ì•„ë‹Œ ê²½ìš° hashcode ê³„ì‚° í›„ lookup
+            if (nextfree == STsize) { //nextidì™€ nextfreeëŠ” STì˜ ì¸ë±ìŠ¤
+                // STì— ëŒ€í•œ overflow ë°œìƒ
                 // print error message
             }
-            ST[nextfree++] = '\0'; // Ç×»ó ¹®ÀÚ ¹è¿­ÀÇ ³¡¿¡´Â ³Î¹®ÀÚ
+            ST[nextfree++] = '\0'; // í•­ìƒ ë¬¸ì ë°°ì—´ì˜ ëì—ëŠ” ë„ë¬¸ì
 
-            ComputeHS(nextid, nextfree); // hashcode °è»ê (°è»ê½ÄÀº °­ÀÇ³ëÆ®¿¡)
-            LookupHS(nextid, hashcode); // hashcode´Â ComputeHS¿¡¼­ °è»êµÈ °á°ú°ª
-                                        // hashcode¿¡ ÇØ´çÇÏ´Â ¸®½ºÆ®¸¦ Å½»ö
+            ComputeHS(nextid, nextfree); // hashcode ê³„ì‚° (ê³„ì‚°ì‹ì€ ê°•ì˜ë…¸íŠ¸ì—)
+            LookupHS(nextid, hashcode); // hashcodeëŠ” ComputeHSì—ì„œ ê³„ì‚°ëœ ê²°ê³¼ê°’
+                                        // hashcodeì— í•´ë‹¹í•˜ëŠ” ë¦¬ìŠ¤íŠ¸ë¥¼ íƒìƒ‰
 
-            if (!found) { // LookupHS ¼öÇà °á°ú, HT¿¡¼­ Ã£Àº °æ¿ì´Â found°ªÀ» 0ÀÌ ¾Æ´Ñ °ªÀ¸·Î ¼³Á¤
+            if (!found) { // LookupHS ìˆ˜í–‰ ê²°ê³¼, HTì—ì„œ ì°¾ì€ ê²½ìš°ëŠ” foundê°’ì„ 0ì´ ì•„ë‹Œ ê°’ìœ¼ë¡œ ì„¤ì •
                 // print message
-                // ST¿¡ ÀúÀåµÈ identifier HT ÀÔ·Â ¿©ºÎ µî Ãâ·Â
-                ADDHT(hashcode); // »õ·Î¿î HTentry¸¦ Ãß°¡
+                // STì— ì €ì¥ëœ identifier HT ì…ë ¥ ì—¬ë¶€ ë“± ì¶œë ¥
+                ADDHT(hashcode); // ìƒˆë¡œìš´ HTentryë¥¼ ì¶”ê°€
             }
             else {
                 // print message
