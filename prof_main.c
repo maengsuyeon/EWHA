@@ -3,21 +3,20 @@
 #include <string.h>
 
 #define FILE_NAME "testdata.txt"
-#define STsize 1000     //size of string table
-#define HTsize 100   //size of hash table
+
+#define STsize 1000  //size of string table
+#define HTsize 100	//size of hash table
+
 #define FALSE 0
 #define TRUE 1
 
-// more define variable
-// main 함수에서 정의되지 않은 변수들을 전역변수 혹은 함수 내의 지역변수로 선언
-int nextid, nextfree;
-int hashcode;
-int found;
+#define isLetter(x) ( ((x) >= 'a' && (x) <='z') || ((x) >= 'A' && (x) <= 'Z') )
+#define isDigit(x) ( (x) >= '0' && (x) <= '9' )
 
-typedef struct HTentry* HTpointer;
+typedef struct HTentry *HTpointer;
 typedef struct HTentry {
-    int index;     //index of identifier in ST
-    HTpointer next;  //pointer to next identifier
+  int index;  //index of identifier in ST
+  HTpointer next;  //pointer to next identifier
 } HTentry;
 
 enum errorTypes { noerror, illsp, illid, overst };
@@ -28,36 +27,56 @@ char seperators[] = " .,;:?!\t\n";
 HTpointer HT[HTsize];
 char ST[STsize];
 
-// more global variables…
+int nextid = 0;  //the current identifier
+int nextfree = 0;  //the next available index of ST
+int hashcode;  //hash code of identifier
+int sameid;  //first index of identifier
+
+int found;  //for the previous occurrence of an identifie
+
 ERRORtypes err;
 
-FILE* fp;   //to be a pointer to FILE 
+FILE *fp;   //to be a pointer to FILE 
 char input;
 
 //Initialize - open input file
+
 void initialize()
 {
-    fp = fopen(FILE_NAME, "r");
-    input = fgetc(fp);
+  fp = fopen(FILE_NAME, "r");
+  input = fgetc( fp );
 }
+
+
+//isSerperator  -  distinguish the seperator
+int isSeperator(char c) 
+{
+  int i;
+  int sep_len;
+
+  sep_len = strlen(seperators);
+  for( i = 0 ; i < sep_len; i++ ) {
+    if( c == seperators[i] )
+      return 1;
+  }
+  return 0;
+}
+
+//printHeading	 -		Print the heading
+
+void PrintHeading()
+{
+  printf("\n\n");
+  printf("  -----------      ------------ \n");
+  printf("  Index in ST       identifier  \n");
+  printf("  -----------      ------------ \n");
+  printf("\n");
+}
+
 
 // Skip Seperators - skip over strings of spaces,tabs,newlines, . , ; : ? !
 //         if illegal seperators,print out error message.
-void SkipSeperators()
-{
-    // \ !(a||b) 는 !a && !b : 즉, a,b모두 아니어야함
-    while (input != EOF && !(isLetter(input) || isDigit(input))) { //문자도 아니고 숫자도 아니고 마지막 글자도 아님
-        if (!isSeperator(input)) { //구분자도 아니면
-            err = illsp; //문자 X 숫자 X 구분자 X -> errType : 올바르지 못한 구분자
-            PrintError(err); //에러로 출력
-        }
-        input = fgetc(fp); //다음 글자를 읽어서 반복
-    }
-    //문자 or 숫자이면, while loop 탈출
-    //input 값이 seperators[]의 원소 중 하나와 일치하는 경우에는
-    //input 값을 파일로부터 새롭게 읽어오는 반복 수행 
-    //input 값이 seperators[]의 원소와 일치하지 않을 때까지
-}
+
 
 // PrintHStable     -      Prints the hash table.write out the hashcode and the list of identifiers 
 //         associated with each hashcode,but only for non-empty lists.
@@ -91,26 +110,67 @@ void PrintHStable()
 //         print the hashtable and abort by calling the function "abort()".
 //         illid    : illegal identifier
 //         illsp    :illegal seperator?
-void PrintError(ERRORtypes err)
-{   switch (err) {
-        case overst: //오버플로우가 발생하면, 오류문구를 출력하고 지금까지의 해시테이블 출력 후 아예종료
-            printf("...Error... OVERFLOW ");
-            PrintHStable();
-            exit(0);
-            break;
-        case illsp: //허락되지 않은 구분자 사용
-            printf("...Error...   %c is illegal seperator \n", input);
-            break;
-        case illid:
-            printf("...Error...    ");
-            //숫자고 문자인데도 오류인 경우 -> 여기지우면 오류
-            while (input != EOF && (isLetter(input) || isDigit(input))) {
-                printf("%c", input);
-                input = fgetc(fp);
+// void PrintError(ERRORtypes err)
+// {   switch (err) {
+//         case overst: //오버플로우가 발생하면, 오류문구를 출력하고 지금까지의 해시테이블 출력 후 아예종료
+//             printf("...Error... OVERFLOW ");
+//             PrintHStable();
+//             exit(0);
+//             break;
+//         case illsp: //허락되지 않은 구분자 사용
+//             printf("...Error...   %c is illegal seperator \n", input);
+//             break;
+//         case illid:
+//             printf("...Error...    ");
+//             //숫자고 문자인데도 오류인 경우 -> 여기지우면 오류
+//             while (input != EOF && (isLetter(input) || isDigit(input))) {
+//                 printf("%c", input);
+//                 input = fgetc(fp);
+//         }
+//         printf(" start with digit \n");
+//         break;
+//     }
+// }
+
+void PrintError( ERRORtypes err )
+{
+  switch( err ) {
+    case overst : 
+      printf("...Error...   OVERFLOW ");
+      PrintHStable();
+      exit(0);
+      break;
+    case illsp :
+      printf("...Error...  %c is illegal seperator \n", input);
+      break;
+    case illid : 
+      printf("...Error... ");
+      while( input != EOF && (isLetter(input) || isDigit(input)) ) {
+	printf("%c", input);
+	input = fgetc( fp );
+      }
+      printf(" start with digit \n");
+      break;
+    case noerror :
+      printf("noerror!");
+      break;
+  }
+}
+
+void SkipSeperators()
+{
+    // \ !(a||b) 는 !a && !b : 즉, a,b모두 아니어야함
+    while (input != EOF && !(isLetter(input) || isDigit(input))) { //문자도 아니고 숫자도 아니고 마지막 글자도 아님
+        if (!isSeperator(input)) { //구분자도 아니면
+            err = illsp; //문자 X 숫자 X 구분자 X -> errType : 올바르지 못한 구분자
+            PrintError(err); //에러로 출력
         }
-        printf(" start with digit \n");
-        break;
+        input = fgetc(fp); //다음 글자를 읽어서 반복
     }
+    //문자 or 숫자이면, while loop 탈출
+    //input 값이 seperators[]의 원소 중 하나와 일치하는 경우에는
+    //input 값을 파일로부터 새롭게 읽어오는 반복 수행 
+    //input 값이 seperators[]의 원소와 일치하지 않을 때까지
 }
 
 void ReadID()
@@ -171,27 +231,21 @@ void ComputeHS(int nid, int nfree)
     //hashcode는 전역변수로 선언되어 있음 
 }
 
-// LookupHS    -For each identifier,Look it up in the hashtable for previous occurrence
-//         of the identifier.If find a match, set the found flag as true.
-//         Otherwise flase.
-//         If find a match, save the starting index of ST in same id. ?
 void LookupHS(int nid, int hscode)
 {
+    //HT[hscode]
     if (HT[hscode] != NULL) {
-        HTpointer ht = HT[hscode];
-        while (ht != NULL){
-            int i = nid;
-            while(ST[i] != NULL){
-                if (ST[ht->index] != ST[i]){
-                    found = FALSE;
-                    break;
-                }
-                found = TRUE;
-                i++;
-                ht->index++;
+        int i = nid;
+        while(ST[i] != '\0'){
+            if (ST[HT[hscode]->index] != ST[i]){
+                found = FALSE;
+                break;
             }
-            ht = ht->next;
+            found = TRUE;
+            i++;
+            HT[hscode]->index++;
         }
+        HT[hscode] = HT[hscode]->next;
     }
     
     else { 
@@ -201,40 +255,22 @@ void LookupHS(int nid, int hscode)
     //판단 결과는 found 변수에 저장
 }
 
-// ADDHT   -   Add a new identifier to the hash table.
-//         If list head ht[hashcode] is null, simply add a list element with
-//         starting index of the identifier in ST.
-//         IF list head is not a null , it adds a new identifier to the head of the chain ?
-void ADDHT(int nid, int hscode)
-{   
-    LookupHS(nid,hscode);
-    if(found == FALSE){
-        HTpointer ptr;
 
-        ptr = (HTpointer)malloc(sizeof(ptr));
-        ptr->index = nid;
-        ptr->next = NULL;
-        
-        free(ptr);
-    }
-    else {
-        /* 1. allocate node */
-        HTpointer ptr;
-        ptr = (HTpointer)malloc(sizeof(ptr));
-        /* 2. put in the data  */
-        ptr->index = nid;
-        /* 3. Make next of new node as head */
-        ptr->next = (HT[hscode]);
-        /* 4. move the head to point to the new node */
-        HT[hscode] = ptr;
+void ADDHT(int nextid, int hscode) {
+    HTpointer ptr;
 
-        free(ptr);
-    }
+    ptr = (HTpointer)malloc(sizeof(ptr));
+    ptr->index = nextid;
+    ptr->next = HT[hscode];
+    HT[hscode] = ptr;
+
+    free(ptr);
+}
 
     //HT에 추가되지 않은 identifier인 경우
     //index는 ST의 index, next는 null 인 새로운 HTEntry를 생성
     //기존 HT에 추가
-}
+
 
 /*  MAIN   -   Read the identifier from the file directly into ST.
 Compute its hashcode.
@@ -261,6 +297,8 @@ int main()
             if (nextfree == STsize) { //nextid와 nextfree는 ST의 인덱스
                 // ST에 대한 overflow 발생
                 // print error message
+                err = overst;
+                PrintError(err);
             }
             ST[nextfree++] = '\0'; // 항상 문자 배열의 끝에는 널문자
 
@@ -269,13 +307,21 @@ int main()
                                         // hashcode에 해당하는 리스트를 탐색
 
             if (!found) { // LookupHS 수행 결과, HT에서 찾은 경우는 found값을 0이 아닌 값으로 설정
-                // print message
-                // ST에 저장된 identifier HT 입력 여부 등 출력
+                printf("%10d      ", nextid);
+                for (i = nextid; i < nextfree - 1; i++)
+                    printf("%c", ST[i]);
+                printf("      (entered.)\n");
                 ADDHT(nextid, hashcode); // 새로운 HTentry를 추가
             }
             else {
                 // print message
+                printf("%10d      ", sameid); //이미 있으므로 이미 존재하는 것의 index를 출력함
+                for (i = nextid; i < nextfree - 1; i++)
+                    printf("%c", ST[i]);
+                printf("      (already existed.)\n");
+                nextfree = nextid;
             }
+
         }
     }
     PrintHStable();
