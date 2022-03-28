@@ -10,7 +10,7 @@
 #define FALSE 0
 #define TRUE 1
 
-#define isLetter(x) ( ((x) >= 'a' && (x) <='z') || ((x) >= 'A' && (x) <= 'Z') )
+#define isLetter(x) ( ((x) >= 'a' && (x) <='z') || ((x) >= 'A' && (x) <= 'Z') || (x) == '_' )
 #define isDigit(x) ( (x) >= '0' && (x) <= '9' )
 
 typedef struct HTentry *HTpointer;
@@ -43,7 +43,7 @@ char input;
 
 void initialize()
 {
-  fp = fopen(FILE_NAME, "r");
+  fp = fopen("testdata1.txt", "r");
   input = fgetc( fp );
 }
 
@@ -110,51 +110,26 @@ void PrintHStable()
 //         print the hashtable and abort by calling the function "abort()".
 //         illid    : illegal identifier
 //         illsp    :illegal seperator?
-// void PrintError(ERRORtypes err)
-// {   switch (err) {
-//         case overst: //오버플로우가 발생하면, 오류문구를 출력하고 지금까지의 해시테이블 출력 후 아예종료
-//             printf("...Error... OVERFLOW ");
-//             PrintHStable();
-//             exit(0);
-//             break;
-//         case illsp: //허락되지 않은 구분자 사용
-//             printf("...Error...   %c is illegal seperator \n", input);
-//             break;
-//         case illid:
-//             printf("...Error...    ");
-//             //숫자고 문자인데도 오류인 경우 -> 여기지우면 오류
-//             while (input != EOF && (isLetter(input) || isDigit(input))) {
-//                 printf("%c", input);
-//                 input = fgetc(fp);
-//         }
-//         printf(" start with digit \n");
-//         break;
-//     }
-// }
-
-void PrintError( ERRORtypes err )
-{
-  switch( err ) {
-    case overst : 
-      printf("...Error...   OVERFLOW ");
-      PrintHStable();
-      exit(0);
-      break;
-    case illsp :
-      printf("...Error...  %c is illegal seperator \n", input);
-      break;
-    case illid : 
-      printf("...Error... ");
-      while( input != EOF && (isLetter(input) || isDigit(input)) ) {
-	printf("%c", input);
-	input = fgetc( fp );
-      }
-      printf(" start with digit \n");
-      break;
-    case noerror :
-      printf("noerror!");
-      break;
-  }
+void PrintError(ERRORtypes err)
+{   switch (err) {
+        case overst: //오버플로우가 발생하면, 오류문구를 출력하고 지금까지의 해시테이블 출력 후 아예종료
+            printf("...Error... OVERFLOW ");
+            PrintHStable();
+            exit(0);
+            break;
+        case illsp: //허락되지 않은 구분자 사용
+            printf("...Error...   %c is illegal seperator \n", input);
+            break;
+        case illid:
+            printf("...Error...    ");
+            //숫자고 문자인데도 오류인 경우 -> 여기지우면 오류
+            while (input != EOF && (isLetter(input) || isDigit(input))) {
+                printf("%c", input);
+                input = fgetc(fp);
+        }
+        printf(" start with digit \n");
+        break;
+    }
 }
 
 void SkipSeperators()
@@ -233,21 +208,25 @@ void ComputeHS(int nid, int nfree)
 
 void LookupHS(int nid, int hscode)
 {
-    //HT[hscode]
+    HTpointer here;
     if (HT[hscode] != NULL) {
+        here = HT[hscode];
         int i = nid;
+        int j = here->index;
+
         while(ST[i] != '\0'){
-            if (ST[HT[hscode]->index] != ST[i]){
+            if (ST[j] != ST[i]){
                 found = FALSE;
                 break;
             }
+
             found = TRUE;
             i++;
-            HT[hscode]->index++;
+            j++;
         }
-        HT[hscode] = HT[hscode]->next;
+        here = here->next;
     }
-    
+
     else { 
         found = FALSE;
     }
@@ -256,7 +235,7 @@ void LookupHS(int nid, int hscode)
 }
 
 
-void ADDHT(int nextid, int hscode) {
+void ADDHT(int hscode) {
     HTpointer ptr;
 
     ptr = (HTpointer)malloc(sizeof(ptr));
@@ -267,9 +246,9 @@ void ADDHT(int nextid, int hscode) {
     free(ptr);
 }
 
-    //HT에 추가되지 않은 identifier인 경우
-    //index는 ST의 index, next는 null 인 새로운 HTEntry를 생성
-    //기존 HT에 추가
+    // HT에 추가되지 않은 identifier인 경우
+    // index는 ST의 index, next는 null 인 새로운 HTEntry를 생성
+    // 기존 HT에 추가
 
 
 /*  MAIN   -   Read the identifier from the file directly into ST.
@@ -300,18 +279,18 @@ int main()
                 err = overst;
                 PrintError(err);
             }
+
             ST[nextfree++] = '\0'; // 항상 문자 배열의 끝에는 널문자
 
             ComputeHS(nextid, nextfree); // hashcode 계산 (계산식은 강의노트에)
             LookupHS(nextid, hashcode); // hashcode는 ComputeHS에서 계산된 결과값
                                         // hashcode에 해당하는 리스트를 탐색
-
             if (!found) { // LookupHS 수행 결과, HT에서 찾은 경우는 found값을 0이 아닌 값으로 설정
                 printf("%10d      ", nextid);
                 for (i = nextid; i < nextfree - 1; i++)
                     printf("%c", ST[i]);
                 printf("      (entered.)\n");
-                ADDHT(nextid, hashcode); // 새로운 HTentry를 추가
+                ADDHT(hashcode); // 새로운 HTentry를 추가
             }
             else {
                 // print message
@@ -321,7 +300,6 @@ int main()
                 printf("      (already existed.)\n");
                 nextfree = nextid;
             }
-
         }
     }
     PrintHStable();
