@@ -92,6 +92,9 @@ void PrintHStable()
         if (HT[i] != NULL) {
             printf("  Hash Code %3d : ", i);
         }
+        else {
+            continue;
+        } 
         for (here = HT[i]; here != NULL; here = here->next) {
             j = here->index;
             while (ST[j] != '\0' && j < STsize) {
@@ -206,27 +209,24 @@ void ComputeHS(int nid, int nfree)
     //hashcode는 전역변수로 선언되어 있음 
 }
 
+
 void LookupHS(int nid, int hscode)
 {
-    HTpointer here;
     if (HT[hscode] != NULL) {
-        here = HT[hscode];
         int i = nid;
-        int j = here->index;
-
+        int j = HT[hscode]->index;
         while(ST[i] != '\0'){
             if (ST[j] != ST[i]){
                 found = FALSE;
                 break;
             }
-
             found = TRUE;
             i++;
             j++;
         }
-        here = here->next;
+        HT[hscode] = HT[hscode]->next;
     }
-
+    
     else { 
         found = FALSE;
     }
@@ -235,7 +235,7 @@ void LookupHS(int nid, int hscode)
 }
 
 
-void ADDHT(int hscode) {
+void ADDHT(int nextid, int hscode) {
     HTpointer ptr;
 
     ptr = (HTpointer)malloc(sizeof(ptr));
