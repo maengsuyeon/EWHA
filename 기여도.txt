@@ -1,7 +1,0 @@
-수민 : PrintHStable(), PrintError(), SkipSeperators(), ReadID(), main()
-수연 : ComputeHS(), LookupHS(), ADDHT(), main()
-코드 수정 및 점검은 같이 했습니다.
-
-기여도(100)
-수민 : 50
-수연 : 50
