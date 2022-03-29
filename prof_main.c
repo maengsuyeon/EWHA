@@ -133,10 +133,14 @@ void PrintError(ERRORtypes err)
         printf("noerror!");
         break;
     case toolong:
-        printf("  too long identifier");
+        printf("...Error...   ")
+        for (int i = nextid; i < nextfree - 1; i++)
+            printf("%c", ST[i]);
+        printf("   too long identifier");
         break;
     }
 }
+
 
 void SkipSeperators() 
 {
@@ -174,6 +178,7 @@ void ReadID()
      //위의 if - else 문으로 word의 첫 글자가 "문자"라는 조건까지 만족
      //while문 (첫글자가 아니면 숫자도 가능하기때문에 word를 완성시키기 위해 구분자(불법 구분포함) 등장 이전까지 while)
         while (input != EOF && (isLetter(input) || isDigit(input))) {
+            char id[] = "";
 
             //ST 테이블의 nextfree index에 글자를 삽입 ->  STsize를 초과해서 넣을 수는 없음
             if (nextfree == STsize) { //STsize를 초과해서 넣을 수는 없음
@@ -185,15 +190,8 @@ void ReadID()
             //오버 플로우만 아니면, ST에 입력받은 input을 넣어줌
             ST[nextfree++] = input; //ST에 넣어줌.
             input = fgetc(fp);  //다음 letter를 읽어서 구분자(불법구분자 포함)이 나올때 까지 반복
-            
-            if (nextfree-nextid >12){
-                err = toolong;
-                PrintError(err);
-                break;
-            }
         }
         //구분자가 등장하기 이전까지 한 word를 한자씩 읽어와서 ST에 저장해둠
-
     }
 }
 
@@ -263,6 +261,11 @@ int main()
 
         ReadID();
 
+        // if(nextfree - nextid >12){
+        //     err = toolong;
+        //     PrintError(err);
+        // }
+
         if (input != EOF && err != illid) {
 
             if (nextfree == STsize) {
@@ -276,6 +279,7 @@ int main()
             LookupHS(nextid, hashcode);
             HTpointer ptr;
             ptr = (HTpointer)malloc(sizeof(HTentry));
+            if
 
             if (!found) { // LookupHS 수행 결과, HT에서 찾은 경우는 found값을 0이 아닌 값으로 설정
                 printf("%10d      ", nextid);
