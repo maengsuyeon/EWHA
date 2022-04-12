@@ -1,0 +1,74 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+enum tnumber { TEOF, TCONST, TELSE, TIF, TINT, TRETURN, TVOID, TWHILE, TEQUAL, TNOTEQU, TLESSE,
+TGREATE, TAND, TOR, TINC, TDEC, TADDASSIGN, TSUBASSIGN, TMULASSIGN, TDIVASSIGN, TMODASSIGN,
+TIDENT, TNUMBER };
+%}
+letter [a-zA-Z_]
+digit [0-9]
+%%
+"const" return(TCONST);
+"else" return(TELSE);
+"if" return(TIF);
+"int" return(TINT);
+"return" return(TRETURN);
+"void" return(TVOID);
+"while" return(TWHILE);
+"==" return(TEQUAL);
+"!=" return(TNOTEQU);
+"<=" return(TLESSE);
+">=" return(TGREATE);
+"&&" return(TAND);
+"||" return(TOR);
+"++" return(TINC);
+"--" return(TDEC);
+"+=" return(TADDASSIGN);
+"-=" return(TSUBASSIGN);
+"*=" return(TMULASSIGN);
+"/=" return(TDIVASSIGN);
+"%=" return(TMODASSIGN);
+[A-Za-z_][A-Za-z0-9_]*  return(TIDENT);
+[1-9][0-9]*|0([0-7]+|(x|X)[0-9A-Fa-f]*)?    return(TNUMBER);
+"/*"([^*]|\*+[^*/])*\**"*/" ;
+"//".*  ;
+[ \t\n] ;
+.   return(yytext[0]);
+%%
+void main()
+{
+    enum tnumber tn; /* token number */
+    printf("Start of Lex\n");
+    while ((tn==yylex()) != TEOF) {
+        switch (tn) {
+            case TCONST : printf("Const\n"); break;
+            case TELSE : printf("Else\n"); break;
+            case TIF : printf("if\n"); break;
+            case TINT : printf("int\n"); break;
+            case TRETURN : printf("return\n"); break;
+            case TVOID : printf("void\n"); break;
+            case TWHILE : printf("while\n"); break;
+            case TEQUAL : printf("==\n"); break;
+            case TNOTEQU : printf("!=\n"); break;
+            case TLESSE : printf("<=\n"); break;
+            case TGREATE : printf(">=\n"); break;
+            case TAND : printf("&&\n"); break;
+            case TOR : printf("||\n"); break;
+            case TINC : printf("++\n"); break;
+            case TDEC : printf("--\n"); break;
+            case TADDASSIGN : printf("+=\n"); break;
+            case TSUBASSIGN : printf("-=\n"); break;
+            case TMULASSIGN : printf("*=\n"); break;
+            case TDIVASSIGN : printf("/=\n"); break;
+            case TMODASSIGN : printf("%=\n"); break;
+            case TIDENT : printf("Identifier: %s\n", yytext); break;
+            case TNUMBER : printf("Number: %d\n", atoi(yytext)); break;
+        }
+    }
+}
+
+int yywrap()
+{
+    printf(" End of Lex\n1976123 맹수연\n");
+    return 1;
+}
